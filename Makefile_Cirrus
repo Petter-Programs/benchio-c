@@ -1,0 +1,44 @@
+# Makefile
+
+# You will need to load MPI, e.g.:
+# module load mpt
+
+CC = mpicc
+CFLAGS = -Wall -g -O3 
+LDFLAGS = # empty placeholder
+TARGET = benchio
+SRCS = benchio.c benchutil.c serial.c mpiio.c adios2.c
+OBJS = $(SRCS:.c=.o)
+
+# Compile with ADIOS2
+# Assumes appropriate version of ADIOS2 is installed, added to PATH (adios2-config commmand must work)
+ifdef USEADIOS
+    # Optional ADIOS2-related flags
+    CFLAGS += $(shell adios2-config --c-flags)
+	LDFLAGS += $(shell adios2-config --c-libs)
+else
+	CFLAGS += -DNOADIOS
+endif
+
+# Compile with debug mode
+ifdef DEBUG_MODE
+	CFLAGS += -DDEBUG_MODE
+endif
+
+# Default target
+all: $(TARGET)
+
+# Rule to build the executable
+$(TARGET): $(OBJS)
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+
+# Rule to compile source files into object files
+%.o: %.c
+	$(CC) $(CFLAGS) $(CFLAGS_ADIOS)  -c $<
+
+# Clean up object files and the executable
+clean:
+	rm -f $(OBJS) $(TARGET)
+
+.PHONY: all clean
+

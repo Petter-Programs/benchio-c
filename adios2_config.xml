@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<adios-config>
+
+  <!-- Needs to match name defined in benchio.h (default adios_output) -->
+  <io name="adios_output">
+
+    <!-- HDF5, BP5, BP4, or BP3  -->
+    <engine type="BP5">
+
+      <parameter key="Verbose" value="0"/>
+
+      <!-- Can optionally set the number of aggregators:
+      <parameter key="NumAggregators" value="4"/>
+      -->
+
+    </engine>
+  
+   </io>
+
+</adios-config>
