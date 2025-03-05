@@ -47,7 +47,7 @@ void mpiio_write(char const *file_name, double ***io_data, double *local_sizes, 
     MPI_Datatype subarray_type;
 
     // Create a 'fixed-point' subarray, which defines what area - in relation to the global array - this process owns
-    MPI_Type_create_subarray(DIMENSIONS, global_sizes_int, local_sizes_int, starts, MPI_ORDER_C, MPI_DOUBLE_PRECISION, &subarray_type);
+    MPI_Type_create_subarray(DIMENSIONS, global_sizes_int, local_sizes_int, starts, MPI_ORDER_C, MPI_DOUBLE, &subarray_type);
 
     MPI_Type_commit(&subarray_type);
 
@@ -58,11 +58,11 @@ void mpiio_write(char const *file_name, double ***io_data, double *local_sizes, 
 
     // Set the MPIIO file view using the subarray that was just created, using native format; implying just writing unformatted binary data
     if (error == MPI_SUCCESS)
-        error = MPI_File_set_view(file_handle, 0, MPI_DOUBLE_PRECISION, subarray_type, "native", MPI_INFO_NULL);
+        error = MPI_File_set_view(file_handle, 0, MPI_DOUBLE, subarray_type, "native", MPI_INFO_NULL);
 
     // Collective MPIIO write operation. Just write total_size double-precision elements here, as the view has already been set, so MPIIO will use that pattern
     if (error == MPI_SUCCESS)
-        error = MPI_File_write_all(file_handle, &io_data[0][0][0], total_size, MPI_DOUBLE_PRECISION, MPI_STATUS_IGNORE);
+        error = MPI_File_write_all(file_handle, &io_data[0][0][0], total_size, MPI_DOUBLE, MPI_STATUS_IGNORE);
 
     if (error != MPI_SUCCESS && my_rank == RANK_ZERO)
         printf("WARNING: MPI-IO error occurred during write, results may not be correct\n");
@@ -113,7 +113,7 @@ void mpiio_read(char const *file_name, double ***io_data, double *local_sizes, d
     MPI_Datatype subarray_type;
 
     // Create a 'fixed-point' subarray, which defines what area - in relation to the global array - this process owns
-    MPI_Type_create_subarray(DIMENSIONS, global_sizes_int, local_sizes_int, starts, MPI_ORDER_C, MPI_DOUBLE_PRECISION, &subarray_type);
+    MPI_Type_create_subarray(DIMENSIONS, global_sizes_int, local_sizes_int, starts, MPI_ORDER_C, MPI_DOUBLE, &subarray_type);
 
     MPI_Type_commit(&subarray_type);
 
@@ -124,11 +124,11 @@ void mpiio_read(char const *file_name, double ***io_data, double *local_sizes, d
 
     // Set the MPIIO file view using the subarray that was just created, using native format; implying just writing unformatted binary data
     if (error == MPI_SUCCESS)
-        error = MPI_File_set_view(file_handle, 0, MPI_DOUBLE_PRECISION, subarray_type, "native", MPI_INFO_NULL);
+        error = MPI_File_set_view(file_handle, 0, MPI_DOUBLE, subarray_type, "native", MPI_INFO_NULL);
 
     // Collective MPIIO write operation. Just write total_size double-precision elements here, as the view has already been set, so MPIIO will use that pattern
     if (error == MPI_SUCCESS)
-        error = MPI_File_read_all(file_handle, &io_data[0][0][0], total_size, MPI_DOUBLE_PRECISION, MPI_STATUS_IGNORE);
+        error = MPI_File_read_all(file_handle, &io_data[0][0][0], total_size, MPI_DOUBLE, MPI_STATUS_IGNORE);
 
     if (error != MPI_SUCCESS && my_rank == RANK_ZERO)
         printf("WARNING: MPI-IO error occurred during read, results may not be correct\n");
